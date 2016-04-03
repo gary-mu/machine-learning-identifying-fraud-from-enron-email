@@ -3,7 +3,7 @@
 from __future__ import division
 import sys
 import pickle
-sys.path.append("../tools/")
+sys.path.append("../../tools/")
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot
@@ -18,6 +18,19 @@ features_list = ['poi','salary','bonus'] # You will need to use more features
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
+
+
+#Find number of features and POIs
+poi_count = 0
+for key in data_dict:
+    if data_dict[key]['poi'] ==1:
+        poi_count +=1 
+poi_count
+
+'Number of POIs are: ', poi_count
+'Number of POIs are ', len(data_dict.itervalues().next())
+for key in (data_dict.itervalues().next()): print key
+
 
 ### Task 2: Remove outliers
 #Plot out data to identify outliers
