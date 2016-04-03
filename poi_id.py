@@ -138,13 +138,16 @@ from sklearn.metrics import classification_report
 
 combined_features = FeatureUnion([("pca", pca), ("selection", selection)])
 pipeline = Pipeline(
-    [
+    [ 
+     ('scaler', scaler),
      ('features', combined_features),
      ('clf', clf),
      ])
 
+
 #Pipeline parameter for GNB
-params_gnb = dict(features__selection__k=[3,4,5,6,7,8],
+params_gnb = dict(
+              features__selection__k=[3,4,5,6,7,8],
               features__pca__n_components = [1,2,3,4],
               features__pca__whiten = [True])
 
@@ -179,6 +182,25 @@ print accuracy_score(prediction, labels_test)
 
 select_k_bool = cv.best_estimator_.named_steps['features'].transformer_list[1][1].get_support()
 print "The Selected Features Are: " ,[x for x, y in zip(features_list[1:], select_k_bool) if y]
+
+
+#######################################################################################################
+########### Get features scores from SelectKBest Algorithm per reviewer 2 comment #####################
+#######################################################################################################
+params_gnb_for_each_feature = dict(
+              selection__k=[1,2,3,4,5,6,7,8])
+
+pipeline_for_each_feature = Pipeline(
+    [
+     ('selection', selection),
+     ('clf', clf)
+     ])
+cv_for_each_feature = GridSearchCV(pipeline_for_each_feature, param_grid=params_gnb_for_each_feature, verbose=1)
+cv_for_each_feature.fit(features_train, labels_train)
+scores = cv_for_each_feature.best_estimator_.named_steps['selection'].scores_
+print zip(features_list[1:], scores)
+#######################################################################################################
+
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
